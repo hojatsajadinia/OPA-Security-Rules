@@ -1,6 +1,10 @@
+############################################################
+#      https://github.com/koengu/OPA-Security-Rules        #
+############################################################
+
 package main
 
-# Do not use any username other than USER
+# Forbidden user 
 denyUserslist := [
     "USER"
 ]
@@ -12,6 +16,7 @@ deny[msg] {
     msg = sprintf("Line %d: Forbidden user found, use 'USER' instead of '%s'", [i+1, val[0]])
 }
 
+# Root ownership
 root_users_ownership := [
     "--chown=root",
     "--chown=toor",
@@ -26,5 +31,26 @@ deny[msg] {
     input[i].Cmd == "copy"
     val := concat(" ", input[i].Flags)
     contains(lower(val), lower(root_users_ownership[_]))
-    msg = sprintf("Line %d: Don't change ownership of files to root, remove '%s' from COPY command or change ownership to non-root user.", [i+1, val])  
+    msg = sprintf("Line %d: Don't change ownership of files to root, change ownership to non-root user.", [i+1, val])  
+}
+
+# Non multi-stage build
+deny[msg] {
+    some i
+    input[i].Cmd == "copy"
+    val := concat(" ", input[i].Flags)
+    not contains(lower(val), lower("--from="))
+    msg = sprintf("Line %d: Copy is used without multi-stage build. %s", [i+1, val])  
+}
+
+# Forbidden exposed port
+denyPortlist := [
+    "22"
+]
+deny[msg] {
+    some i
+	input[i].Cmd == "expose"
+	val := input[i].Value
+	not contains(lower(val[_]), lower(denyUserslist[_]))
+    msg = sprintf("Line %d: Forbidden exposed port found. Don't expose management ports, '%s'", [i+1, val[0]])
 }
