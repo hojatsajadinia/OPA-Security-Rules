@@ -55,3 +55,24 @@ deny[msg] {
     lower(val[_]) == lower(denyPortlist[_])
     msg = sprintf("Line %d: Forbidden exposed port found. Don't expose management ports, '%s'", [i+1, val[0]])
 }
+
+# Do Not store secrets in ENV variables
+secrets_env = [
+    "passwd",
+    "password",
+    "pass",
+    "secret",
+    "key",
+    "access",
+    "api_key",
+    "apikey",
+    "token",
+    "tkn"
+]
+
+deny[msg] {    
+    input[i].Cmd == "env"
+    val := input[i].Value
+    contains(lower(val[_]), secrets_env[_])
+    msg = sprintf("Line %d: Potential secret in ENV key found: %s", [i+1, val])
+}
