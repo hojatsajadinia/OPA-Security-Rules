@@ -45,12 +45,13 @@ deny[msg] {
 
 # Forbidden exposed port
 denyPortlist := [
-    "22"
+    "22",
+    "3389"
 ]
 deny[msg] {
     some i
 	input[i].Cmd == "expose"
 	val := input[i].Value
-	not contains(lower(val[_]), lower(denyUserslist[_]))
+    lower(val[_]) == lower(denyPortlist[_])
     msg = sprintf("Line %d: Forbidden exposed port found. Don't expose management ports, '%s'", [i+1, val[0]])
 }
