@@ -1,4 +1,3 @@
-
 # OPA Security Rules
 
 A set of OPA rules designed for the static analysis of Docker and Kubernetes configuration files with the goal of improving security.
@@ -23,4 +22,3 @@ And if you want a json output, use below command:
 # Dockerfile
 $ conftest test -o json -p opa-docker-rules.rego Dockerfile 
 ```
-
