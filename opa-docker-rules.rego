@@ -100,10 +100,6 @@ deny[msg] {
 }
 
 # Don't use curl or wget commands
-curlCommands := [
-    "curl ",
-    "wget "
-]
 deny[msg] {
     some i
 	input[i].Cmd == "run"
@@ -114,10 +110,6 @@ deny[msg] {
 }
 
 # Don't upgrade your system packages
-curlCommands := [
-    "curl ",
-    "wget "
-]
 deny[msg] {
     some i
 	input[i].Cmd == "run"
